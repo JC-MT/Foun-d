@@ -9,7 +9,6 @@ import NavBar from "./Components/NavBar/NavBar";
 import SideBar from "./Components/NavBar/Sidebar/SideBar";
 import MyItems from "./Components/Accounts/Profile/MyItems/MyItems";
 import Chatbox from "./Components/Chatbox/Chatbox";
-import FAQ from "./Components/FAQ/FAQ";
 import ViewUserSettings from "./Components/Accounts/EditAccount/ViewUserSettings";
 import Edit from "./Components/Accounts/EditAccount/Edit";
 import NewItemForm from "./Components/Items/Create/NewItemForm";
@@ -19,7 +18,6 @@ import ShowItem from "./Components/Items/Show/ShowItem";
 import Homepage from "./Pages/Home/Home";
 import Indexpage from "./Pages/Items/Index/Index";
 import Createpage from "./Pages/Items/Create/New";
-import About from "./Pages/About/About";
 import Editpage from "./Pages/Items/Edit/Edit";
 import GiveawayPage from "./Pages/Items/Giveaway/Giveaway";
 
@@ -175,8 +173,6 @@ export default function App() {
             />
             <Route path="/new" element={<Createpage user={user} />} />
             <Route path="/newitem" element={<NewItemForm user={user} />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/faq" element={<FAQ />} />
             <Route
               path="/show/:itemId"
               element={
