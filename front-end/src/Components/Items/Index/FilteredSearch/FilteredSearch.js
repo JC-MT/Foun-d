@@ -4,7 +4,6 @@ import Calendar from "react-calendar";
 import moment from "moment";
 
 import "./FilteredSearch.scss";
-import calendarIcon from "../../../../Images/calendar.png";
 
 const FilteredSearch = ({
   itemName,
@@ -163,14 +162,6 @@ const FilteredSearch = ({
                   <Form.Group controlId="formBasicDate1">
                     <Form.Label>Date 1</Form.Label>
                     <div id="calendar1Container">
-                      <Image
-                        src={calendarIcon}
-                        alt="calendar icon"
-                        id="calendarIcon"
-                        onClick={() => {
-                          setCalendarOpen1(!calendarOpen1);
-                        }}
-                      />
                       <Form.Control
                         type="text"
                         name="date1"
@@ -190,14 +181,6 @@ const FilteredSearch = ({
                   <Form.Group controlId="formBasicDate1">
                     <Form.Label>Date 2</Form.Label>
                     <div id="calendar2Container">
-                      <Image
-                        src={calendarIcon}
-                        alt="calendar icon"
-                        id="calendarIcon"
-                        onClick={() => {
-                          setCalendarOpen2(!calendarOpen2);
-                        }}
-                      />
                       <Form.Control
                         type="text"
                         name="date2"

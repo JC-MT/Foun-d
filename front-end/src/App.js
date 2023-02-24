@@ -1,7 +1,6 @@
 // Library Imports
 import { useState, useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
-import { scaleRotate as MyItemsSidebar } from "react-burger-menu";
 import axios from "axios";
 
 // Component Imports
@@ -23,9 +22,9 @@ import GiveawayPage from "./Pages/Items/Giveaway/Giveaway";
 
 // Hook imports
 import useMessages from "./Hooks/useMessages";
+import useHamburgerMenu from "./Hooks/useHamburgerMenu";
 
 // Styling Imports
-import "./App.scss";
 import FourOFour from "./Components/404/FourOFour";
 
 export default function App() {
@@ -103,10 +102,12 @@ export default function App() {
     setClaimItem({ user: getUser, item: itemName });
   }
 
-  return (
-    <section id="outer-container">
-      {/* {model ? modelStructure : ""} */}
-      <MyItemsSidebar
+	const loggedInUser = [{ id: ''}]
+	const notification = []
+	const  [ active, setActive, hamburgerMenuStructure ] = useHamburgerMenu({notification, loggedInUser})
+
+      /* {model ? modelStructure : ""} */
+      /* <MyItemsSidebar
         pageWrapId={"page-wrap"}
         outerContainerId={"outer-container"}
         isOpen={isOpen}
@@ -124,8 +125,11 @@ export default function App() {
           // handleItemDelete={handleItemDelete}
           // setModel={setModel}
         />
-      </MyItemsSidebar>
-      <section id="page-wrap">
+      </MyItemsSidebar> */
+   return   (
+	 		<div>
+				{hamburgerMenuStructure}
+				<nav>
         <NavBar
           user={user}
           users={users}
@@ -134,10 +138,11 @@ export default function App() {
           handleLogout={handleLogout}
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          // model={model}
+					setActive={setActive}
+          active={active}
         />
-        <SideBar /* model={model} */ />
-        <Chatbox
+				</nav>
+        {/* <Chatbox
           claimItem={claimItem}
           setClaimItem={setClaimItem}
           // model={model}
@@ -146,8 +151,8 @@ export default function App() {
           authenticated={authenticated}
           messages={messages}
           setMessages={setMessages}
-        />
-        <main className="mainSection">
+        /> */}
+        <main className={`${ active ? 'brightness-90' : ''}`}>
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route
@@ -198,7 +203,6 @@ export default function App() {
             <Route path="/*" element={<FourOFour />} />
           </Routes>
         </main>
-      </section>
-    </section>
-  );
-}
+      </div>
+		);
+};

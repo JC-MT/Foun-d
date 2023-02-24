@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "react-bootstrap";
-import { nanoid } from "nanoid";
 import axios from "axios";
 
 import RenderIndex from "./RenderIndex/RenderIndex";
@@ -8,8 +6,6 @@ import windowDimensions from "../../../Hooks/GetWindowDimensions";
 import IndexSkeloton from "./IndexSkeleton/IndexSkeloton";
 import FilteredSearch from "./FilteredSearch/FilteredSearch";
 import RenderMapIndex from "./RenderMapIndex/RenderMapIndex";
-
-import "./Index.scss";
 
 const IndexContainer = ({ user, users, authenticated, setUsers }) => {
   const { width, height } = windowDimensions();
@@ -59,8 +55,13 @@ const IndexContainer = ({ user, users, authenticated, setUsers }) => {
   };
 
   return (
-    <section id="indexContainer">
-      <aside id="searhSection-aside">
+    <div >
+			    <RenderMapIndex
+            foundItems={foundItems}
+            user={user}
+            authenticated={authenticated}
+          />
+      {/* <aside id="searhSection-aside">
         <FilteredSearch
           itemName={itemName}
           setItemName={setItemName}
@@ -124,8 +125,8 @@ const IndexContainer = ({ user, users, authenticated, setUsers }) => {
         ) : (
           <IndexSkeloton />
         )}
-      </section>
-    </section>
+      </section> */}
+    </div>
   );
 };
 

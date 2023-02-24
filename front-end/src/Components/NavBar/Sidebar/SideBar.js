@@ -34,10 +34,12 @@ export default function SideBar({ model }) {
   }
 
   return (
-    <div className={`sidebar-container sticky ${model ? "model-On" : ""}`}>
+	<section className="filterSection">
+   <div className={`gap-1 overflow-x-auto overflow-y-hidden	place-content-start p-2 h-[60px] place-items-center top-20 fixed flex w-screen z-20 ${model ? "model-On" : ""}`}>
       <div className="icon-container">
-        <Link to="/index" className={effect.index ? "pulse" : ""}>
-          <img
+        {/* <Link to="/index" className={effect.index ? "pulse" : ""}> */}
+					Date posted
+          {/* <img
             className={effect.index ? "pulse" : ""}
             onClick={() => {
               startAnimation("index");
@@ -60,7 +62,7 @@ export default function SideBar({ model }) {
                 faq: false,
               });
             }}
-            style={{ height: "50px" }}
+            style={{ height: "40px" }}
             src="https://static.thenounproject.com/png/1400400-200.png"
             alt="sidebaricon"
           />
@@ -70,19 +72,20 @@ export default function SideBar({ model }) {
             }`}
           >
             View All Items 🏁
-          </span>
-        </Link>
-        <span
+          </span> */}
+        {/* </Link> */}
+        {/* <span
           className={`sidebar-tooltip ${
             show.index ? `visible-sidebar-tooltip` : ``
           }`}
         >
           View All Items 🏁
-        </span>
+        </span> */}
       </div>
-      <div className="icon-container">
+      {/* <div className="icon-container">
         <Link to="/new" className={effect.new ? "pulse" : ""}>
-          <img
+					Borough */}
+          {/* <img
             className={effect.new ? "pulse" : ""}
             onClick={() => {
               startAnimation("new");
@@ -105,7 +108,7 @@ export default function SideBar({ model }) {
                 faq: false,
               });
             }}
-            style={{ height: "100px" }}
+            style={{ height: "60px", width: "60px" }}
             src="https://static.thenounproject.com/png/1409569-200.png"
             alt="sidebaricon"
           />
@@ -115,19 +118,20 @@ export default function SideBar({ model }) {
             }`}
           >
             Add New 🆕
-          </span>
-        </Link>
-        <span
+          </span> */}
+        {/* </Link> */}
+        {/* <span
           className={`add-span sidebar-tooltip ${
             show.new ? `visible-sidebar-tooltip` : ``
           }`}
         >
           Add New 🆕
-        </span>
-      </div>
+        </span> */}
+      {/* </div> */}
       <div className="icon-container">
         <Link to="/giveaway" className={effect.giveaway ? "pulse" : ""}>
-          <img
+					Borough
+          {/* <img
             className={effect.giveaway ? "pulse" : ""}
             onClick={() => {
               startAnimation("giveaway");
@@ -150,7 +154,7 @@ export default function SideBar({ model }) {
                 faq: false,
               });
             }}
-            style={{ height: "50px" }}
+            style={{ height: "40px" }}
             src="https://static.thenounproject.com/png/5014824-200.png"
             alt="sidebaricon"
           />
@@ -160,19 +164,20 @@ export default function SideBar({ model }) {
             }`}
           >
             Giveaway 🎁
-          </span>
+          </span> */}
         </Link>
-        <span
-          className={`sidebar-tooltip ${
-            show.giveaway ? `visible-sidebar-tooltip` : ``
-          }`}
-        >
-          Giveaway 🎁
-        </span>
+        {/* // <span
+        //   className={`sidebar-tooltip ${
+        //     show.giveaway ? `visible-sidebar-tooltip` : ``
+        //   }`}
+        // >
+        //   Giveaway 🎁
+        // </span> */}
       </div>
       <div className="icon-container">
         <Link to="/faq" className={effect.faq ? "pulse" : ""}>
-          <img
+					All filters
+          {/* <img
             className={effect.faq ? "pulse" : ""}
             onClick={() => {
               startAnimation("faq");
@@ -195,26 +200,49 @@ export default function SideBar({ model }) {
                 faq: false,
               });
             }}
-            style={{ height: "100px" }}
+            style={{ height: "60px", width: "60px" }}
             src="https://static.thenounproject.com/png/124666-200.png"
             alt="sidebaricon"
-          />
-          <span
+          /> */}
+          {/* <span
             className={`faq-span sidebar-tooltip ${
               show.faq ? `visible-sidebar-tooltip` : ``
             }`}
           >
             FAQ's 🧐
-          </span>
+          </span> */}
         </Link>
-        <span
+        {/* <span
           className={`faq-span sidebar-tooltip ${
             show.faq ? `visible-sidebar-tooltip` : ``
           }`}
         >
           FAQ's 🧐
-        </span>
+        </span> */}
+      </div>
+			<div className="icon-container">
+        <Link to="/" className={effect.faq ? "pulse" : ""}>
+					All filters
+        </Link>
+      </div>
+			<div className="icon-container">
+        <Link to="/" className={effect.faq ? "pulse" : ""}>
+					All filters
+        </Link>
+      </div>
+			<div className="icon-container">
+        <Link to="/" className={effect.faq ? "pulse" : ""}>
+					All filters
+        </Link>
+      </div>
+			<div className="icon-container">
+        <Link to="/" className={effect.faq ? "pulse" : ""}>
+					All filters
+        </Link>
       </div>
     </div>
+
+
+		</section>
   );
 }
