@@ -1,19 +1,18 @@
 import { io } from "socket.io-client";
 
-const socket = io('https://foun-d.netlify.app/', { 
-	withCredentials: true,
-	autoConnect: true
+const socket = io('http://localhost:4000', { 
+	autoConnect: false,
 });
+
+  socket.onAny((event, ...args) => {
+    console.log(event, args);
+  });
 
 //THIS CONNECTS OUR SOCKET
 // socket.on("connect", () => {
 //     console.log('Socket is connected')
 //     console.log("ID:", socket.id);
 //     console.log(socket)
-//   });
-
-//   socket.onAny((event, ...args) => {
-//     console.log(event, args);
 //   });
 
 //   socket.on("connect_error", (err) => {
@@ -68,4 +67,4 @@ const socket = io('https://foun-d.netlify.app/', {
 //       users.push(user);
 //     });
 //   });
-  export default socket
+  export default socket;

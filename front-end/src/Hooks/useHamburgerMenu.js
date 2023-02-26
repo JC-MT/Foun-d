@@ -36,7 +36,7 @@ export default function useHamburgerMenu({notification, loggedInUser}) {
         <Link to={'/new'} onClick={handleClose} class="text-xl mb-4 w-min delay-150 hover:text-slate-400 hover:cursor-pointer">
             My Items
         </Link>
-				<Link to={'/'} onClick={handleClose} class="text-xl mb-4 w-min delay-150 hover:text-slate-400 hover:cursor-pointer">
+				<Link to={'/chat'} onClick={handleClose} class="text-xl mb-4 w-min delay-150 hover:text-slate-400 hover:cursor-pointer">
             Chat
         </Link>
         <Link to={'/index'} onClick={handleClose} class="text-xl mb-4 w-min delay-150 hover:text-slate-400 hover:cursor-pointer">

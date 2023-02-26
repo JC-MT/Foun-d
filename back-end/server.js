@@ -8,61 +8,88 @@ const PORT = process.env.PORT;
 
 const io = new Server(httpServer, {
   cors: {
-    origin: `http://localhost:4000`,
-    methods: ["GET", "POST"],
-    credentials: true,
+    origin: `http://localhost:3000`,
+    // methods: ["GET", "POST"],
+    // credentials: true,
   },
 });
 
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
+const { InMemorySessionStore } = require("./sessionStore");
+const sessionStore = new InMemorySessionStore();
+
 io.use((socket, next) => {
+  const sessionID = socket.handshake.auth.sessionID;
+	
+  if (sessionID) {
+    // find existing session
+    const session = sessionStore.findSession(sessionID);
+    if (session) {
+      socket.sessionID = sessionID;
+      socket.userID = session.userID;
+      socket.username = session.username;
+      return next();
+    }
+  }
   const username = socket.handshake.auth.username;
   if (!username) {
     return next(new Error("invalid username"));
   }
+  // create new session
+  socket.sessionID = randomId();
+  socket.userID = randomId();
   socket.username = username;
+	console.log('j')
   next();
 });
 
 io.on("connection", (socket) => {
+  // persist session
+  sessionStore.saveSession(socket.sessionID, {
+    userID: socket.userID,
+    username: socket.username,
+    connected: true,
+  });
+
+  // emit session details
+  socket.emit("session", {
+    sessionID: socket.sessionID,
+    userID: socket.userID,
+  });
+
+  // join the "userID" room
+  socket.join(socket.userID);
+
   const users = [];
-  console.log("new connection");
-  for (let [id, socket] of io.of("/").sockets) {
-    if (users[0]) {
-      for (let user of users) {
-        if (user.username !== socket.username) {
-          users.push({
-            userID: id,
-            username: socket.username,
-          });
-        }
-      }
-    } else {
-      users.push({
-        userID: id,
-        username: socket.username,
-      });
-    }
-  }
+  sessionStore.findAllSessions().forEach((session) => {
+    users.push({
+      userID: session.userID,
+      username: session.username,
+      connected: session.connected,
+    });
+  });
 
   socket.emit("users", users);
 
   socket.broadcast.emit("user connected", {
-    userID: socket.id,
+    userID: socket.userID,
     username: socket.username,
   });
 
-  socket.on("private message", ({ sendThis, to }) => {
+  socket.on("private message", ({ content, to }) => {
     socket.to(to).emit("private message", {
-      sendThis,
+      content,
       from: socket.id,
     });
   });
 
   socket.on("disconnect", () => {
-    socket.broadcast.emit("user disconnected", socket.username);
+    socket.broadcast.emit("user disconnected", {
+			userID: socket.id,
+			username: socket.username,
+		});
   });
 
   socket.on("new message", (msg) => {
@@ -77,8 +104,5 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Socket.io & App port at ${PORT}`);
+  console.log(`Server listenning http://localhost:${PORT}`);
 });
-// app.listen(PORT, () => {
-//   console.log(`Started on port ${PORT}`);
-// });

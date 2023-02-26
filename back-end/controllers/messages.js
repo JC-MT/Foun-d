@@ -12,7 +12,6 @@ messages.get("/", async (req, res) => {
   const allMessages = await getAllMessages();
 
   if (allMessages) {
-    console.log("=== GET all messages", allMessages, "===");
     res.status(200).json(allMessages);
   } else {
     res.status(404).send("Cannot find any Messages");
@@ -20,7 +19,6 @@ messages.get("/", async (req, res) => {
 });
 
 messages.post("/", async (req, res) => {
-	console.log(req.body.isread)
   const newMessage = {
     receiver: req.body.receiver,
     sender: req.body.sender,
@@ -38,7 +36,6 @@ messages.post("/", async (req, res) => {
     );
 
     if (createdMessage) {
-      console.log("=== POST Message", createdMessage, "===");
       res.status(201).json(createdMessage);
     } else {
       res.status(404).send("Message not created");

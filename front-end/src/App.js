@@ -19,6 +19,7 @@ import Indexpage from "./Pages/Items/Index/Index";
 import Createpage from "./Pages/Items/Create/New";
 import Editpage from "./Pages/Items/Edit/Edit";
 import GiveawayPage from "./Pages/Items/Giveaway/Giveaway";
+import ChatPage from "./Pages/Chat/ChatPage";
 
 // Hook imports
 import useMessages from "./Hooks/useMessages";
@@ -59,11 +60,11 @@ export default function App() {
 
     getUsers();
 
-    const UsersInterval = setInterval(() => {
-      getUsers();
-    }, 5000);
+    // const UsersInterval = setInterval(() => {
+    //   getUsers();
+    // }, 5000);
 
-    return () => clearInterval(UsersInterval);
+  //   return () => clearInterval(UsersInterval);
   }, []); // eslint-disable-line
 
   const getUsers = async () => {
@@ -166,6 +167,7 @@ export default function App() {
                 />
               }
             />
+						<Route path="/chat" element={<ChatPage />} />
             <Route
               path="/giveaway"
               element={
