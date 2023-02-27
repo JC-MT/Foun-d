@@ -12,6 +12,7 @@ class InMemorySessionStore extends SessionStore {
   }
 
   findSession(id) {
+		console.log('find session was called: ',this.sessions.get(id))
     return this.sessions.get(id);
   }
 

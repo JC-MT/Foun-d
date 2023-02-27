@@ -9,20 +9,23 @@ export default function ChatPage(){
 	const [activeUsers, setActiveUsers] = useState([])
 	const [isConnected, setIsConnected] = useState({});
   const [selectedUser, setSelectedUser] = useState({});
-	console.log(selectedUser)
+	console.log(activeUsers)
 
 	const handleTextChange = (event) => {
     setSeletedName({ name: event.target.value });
   };
 
-	const prepareUserAttributes = (user) => {
+	const prepareUserAttributes = (user, yourUserID) => {
 		user.connected = true;
-		user.messages = [];
 		user.hasNewMessages = false;
 
-		if(user.username === currentUser.username){
+		if(user.userID === yourUserID){
 			user.self = true;
 		}
+
+		user.messages.forEach((message) => {
+			message.fromSelf = message.from === socket.userID;
+		});
 	}
 
 	function handleMessage(content) {
@@ -36,22 +39,31 @@ export default function ChatPage(){
 				fromSelf: true,
 			});
 		}
-		setSelectedUser(selectedUser)
 	}
 
 	useEffect(() => {
-		socket.on('users' , (users) => {
-				users.forEach((user) => {
-					prepareUserAttributes(user)
-				});
+		const session = window.localStorage.getItem("sessionID");
 
-				let sortedUsers = users.sort((a, b) => {
-					if (a.self) return -1;
-					if (b.self) return 1;
-					if (a.username < b.username) return -1;
-					return a.username > b.username ? 1 : 0;
-				});
-				setActiveUsers([...sortedUsers])
+		if (session) {
+			const sessionID = JSON.parse(session)
+			socket.auth = { sessionID };
+			socket.connect();
+		}
+		
+		socket.on('users' , (users) => {
+			const id = window.localStorage.getItem("userID");
+			const yourUserID = JSON.parse(id)
+			users.forEach((user) => {
+				prepareUserAttributes(user, yourUserID)
+			});
+
+			let sortedUsers = users.sort((a, b) => {
+				if (a.self) return -1;
+				if (b.self) return 1;
+				if (a.username < b.username) return -1;
+				return a.username > b.username ? 1 : 0;
+			});
+			setActiveUsers([...sortedUsers])
 		})
 
 		socket.on("session", ({ sessionID, userID }) => {
@@ -59,7 +71,7 @@ export default function ChatPage(){
 			socket.auth = { sessionID };
 			// store it in the localStorage
 			window.localStorage.setItem("sessionID", JSON.stringify(sessionID));
-
+			window.localStorage.setItem("userID", JSON.stringify(userID));
 			// save the ID of the user
 			socket.userID = userID;
 
@@ -67,8 +79,22 @@ export default function ChatPage(){
 		});
 
 		socket.on('user connected' , (user) => {
-			prepareUserAttributes(user)
-			setActiveUsers([...activeUsers, user])
+			const userExist = activeUsers.find((activeUser) => activeUser.userID === user.userID)
+			const id = window.localStorage.getItem("userID");
+			const yourUserID = JSON.parse(id)
+
+			if(userExist){
+				for (let user of activeUsers) {
+					if (userExist.userID === user.userID) {
+						user.connected = true;
+						break;
+					}
+				}
+				setActiveUsers([...activeUsers])
+			} else {
+				prepareUserAttributes(user, yourUserID)
+				setActiveUsers([...activeUsers, user])
+			}
 		})
 
 		socket.on("connect", () => {
@@ -90,10 +116,10 @@ export default function ChatPage(){
 		});
 
     socket.on('user disconnected', (user) => {
-      for (let idx = 0; idx < activeUsers.length; idx++) {
-        let currentUser = activeUsers[idx];
-        if (user.userID === currentUser.userID) {
-          currentUser.connected = false;
+			const disconnetedID = user[0]
+      for (let user of activeUsers) {
+        if (disconnetedID === user.userID) {
+          user.connected = false;
           break;
         }
       }
@@ -104,14 +130,15 @@ export default function ChatPage(){
       // setLastMessage(data);
     });
 
-		socket.on("private message", ({ content, from }) => {
+		socket.on("private message", ({ content, from, to }) => {
 			for (let idx = 0; idx < activeUsers.length; idx++) {
 				let user = activeUsers[idx];
-				if (user.userID === from) {
-					user.messages.push({
-						content,
-						fromSelf: false,
-					});
+        const fromSelf = socket.userID === from;
+        if (user.userID === (fromSelf ? to : from)) {
+          user.messages.push({
+            content,
+            fromSelf,
+          });
 					if (user.userID !== selectedUser.userID) {
 						user.hasNewMessages = true;
 					}
@@ -134,7 +161,7 @@ export default function ChatPage(){
 			socket.off('private message');
 			socket.off('user connected');
 			socket.off('user disconnected')
-			// socket.off('session')
+			socket.off('session')
     };
 
   }, [currentUser, activeUsers]);
@@ -144,11 +171,12 @@ export default function ChatPage(){
 		setCurrentUser({username: selectedName.name})
 		const sessionID = window.localStorage.getItem("sessionID");
 
+		console.log(sessionID)
 		if (sessionID) {
 			socket.auth = { sessionID };
 			socket.connect();
 		} else {
-			socket.auth = { username: currentUser.username};
+			socket.auth = { username: selectedName.name};
 			socket.connect();
 		}
 		setSeletedName({name: ''})
