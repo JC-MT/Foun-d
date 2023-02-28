@@ -24,7 +24,6 @@ const { InMemoryMessageStore } = require("./messageStore");
 const messageStore = new InMemoryMessageStore();
 
 io.use((socket, next) => {
-	console.log('socket.handshake.auth is ', socket.handshake.auth)
   const sessionID = socket.handshake.auth.sessionID;
 	
   if (sessionID) {
@@ -40,7 +39,6 @@ io.use((socket, next) => {
   }
 
   const username = socket.handshake.auth.username;
-	console.log('username about to log in: ', username)
   if (!username) {
     return next(new Error("invalid username"));
   }
@@ -64,6 +62,7 @@ io.on("connection", (socket) => {
   socket.emit("session", {
     sessionID: socket.sessionID,
     userID: socket.userID,
+		username: socket.username
   });
 
   // join the "userID" room
@@ -112,6 +111,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
 		const matchingSocket = await io.in(socket.userID).allSockets();
 		const isDisconnected = matchingSocket.size === 0;
+
 		if(isDisconnected){
       // notify other users
       socket.broadcast.emit("user disconnected", socket.userID);
@@ -123,16 +123,6 @@ io.on("connection", (socket) => {
       });
 		}
   });
-
-  // socket.on("new message", (msg) => {
-  //   console.log(msg);
-  //   io.emit("send message", { message: msg, user: socket.username });
-  // });
-
-  // socket.on("new user", (usr) => {
-  //   socket.username = usr;
-  //   console.log("User connected - Username: " + socket.username);
-  // });
 });
 
 httpServer.listen(PORT, () => {

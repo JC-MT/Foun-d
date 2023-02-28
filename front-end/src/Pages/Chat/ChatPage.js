@@ -43,10 +43,14 @@ export default function ChatPage(){
 
 	useEffect(() => {
 		const session = window.localStorage.getItem("sessionID");
+		const id = window.localStorage.getItem("userID");
+		const username = window.localStorage.getItem("username");
 
-		if (session) {
+		if (session && id && username) {
 			const sessionID = JSON.parse(session)
-			socket.auth = { sessionID };
+			const yourUserID = JSON.parse(id)
+			const parsedUsername = JSON.parse(username)
+			socket.auth = { sessionID, userID: yourUserID, username: parsedUsername};
 			socket.connect();
 		}
 		
@@ -66,14 +70,16 @@ export default function ChatPage(){
 			setActiveUsers([...sortedUsers])
 		})
 
-		socket.on("session", ({ sessionID, userID }) => {
+		socket.on("session", ({ sessionID, userID, username }) => {
 			// attach the session ID to the next reconnection attempts
 			socket.auth = { sessionID };
 			// store it in the localStorage
 			window.localStorage.setItem("sessionID", JSON.stringify(sessionID));
 			window.localStorage.setItem("userID", JSON.stringify(userID));
+			window.localStorage.setItem("username", JSON.stringify(username));
 			// save the ID of the user
 			socket.userID = userID;
+			socket.username = username
 
 			setIsConnected({sessionID})
 		});
@@ -115,8 +121,8 @@ export default function ChatPage(){
 			setActiveUsers([...activeUsers])
 		});
 
-    socket.on('user disconnected', (user) => {
-			const disconnetedID = user[0]
+    socket.on('user disconnected', (userID) => {
+			const disconnetedID = userID
       for (let user of activeUsers) {
         if (disconnetedID === user.userID) {
           user.connected = false;
@@ -170,10 +176,11 @@ export default function ChatPage(){
 		e.preventDefault()
 		setCurrentUser({username: selectedName.name})
 		const sessionID = window.localStorage.getItem("sessionID");
+		const id = window.localStorage.getItem("userID");
 
 		console.log(sessionID)
 		if (sessionID) {
-			socket.auth = { sessionID };
+			socket.auth = { sessionID, id };
 			socket.connect();
 		} else {
 			socket.auth = { username: selectedName.name};
@@ -188,16 +195,14 @@ export default function ChatPage(){
 			<input  value={selectedName.name} onChange={handleTextChange} className='w-[50%] border-2' type="text"/>
 			<button type="submit" >Submit</button>
 			</form>
-		<div className="pt-2 flex">
-			<div className="w-[30%]">
-				<Users setSelectedUser={setSelectedUser} activeUsers={activeUsers}/>
+			<div className="pt-2 flex">
+				<div className="w-[30%]">
+					<Users setSelectedUser={setSelectedUser} activeUsers={activeUsers}/>
+				</div>
+				<div className="w-[70%]">
+					<Conversation handleMessage={handleMessage} selectedUser={selectedUser}/>
+				</div>
 			</div>
-			<div className="w-[70%]">
-				<Conversation handleMessage={handleMessage} selectedUser={selectedUser}/>
-			</div>
-		</div>
-
-
 		</div>
 	)
 };
