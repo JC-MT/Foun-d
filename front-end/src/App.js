@@ -167,7 +167,22 @@ export default function App() {
                 />
               }
             />
-						<Route path="/chat" element={<ChatPage />} />
+						<Route
+              path="/my-items"
+              element={
+								<MyItems
+								user={user}
+								isOpen={isOpen}
+								setIsOpen={setIsOpen}
+								authenticated={authenticated}
+								setDeleteItem={setDeleteItem}
+								handleShow={handleShow}
+								// handleItemDelete={handleItemDelete}
+								// setModel={setModel}
+							/>
+              }
+            />
+						<Route path="/chat" element={<ChatPage users={users}/>} />
             <Route
               path="/giveaway"
               element={
@@ -178,6 +193,7 @@ export default function App() {
                 />
               }
             />
+						
             <Route path="/new" element={<Createpage user={user} />} />
             <Route path="/newitem" element={<NewItemForm user={user} />} />
             <Route

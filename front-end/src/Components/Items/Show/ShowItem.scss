@@ -1,51 +1,51 @@
-#showItemSection {
-  display: block;
-  background-color: #B6D7A8;
-  width: 100vw;
-  height: 100vh;
-  text-align: center;
-  align-items: center;
+// #showItemSection {
+//   display: block;
+//   background-color: #B6D7A8;
+//   width: 100vw;
+//   height: 100vh;
+//   text-align: center;
+//   align-items: center;
 
-  #show-item-div {
-    display: flex;
-    text-align: left;
-    align-items: center;
-    place-content: center;
-    gap: 25px;
-  }
+//   #show-item-div {
+//     display: flex;
+//     text-align: left;
+//     align-items: center;
+//     place-content: center;
+//     gap: 25px;
+//   }
 
-  #show-image {
-    height: 350px;
-    width: 350px;
-    border-radius: 100%;
-  }
-}
+//   #show-image {
+//     height: 350px;
+//     width: 350px;
+//     border-radius: 100%;
+//   }
+// }
 
-#modalHeader {
-  align-self: center;
-}
+// #modalHeader {
+//   align-self: center;
+// }
 
-#modalBody {
-  text-align: center;
-  align-self: center;
-}
+// #modalBody {
+//   text-align: center;
+//   align-self: center;
+// }
 
-#show-image{
-	height: 350px;
-	width: 350px;
-	border-radius: 100%;
-}
+// #show-image{
+// 	height: 350px;
+// 	width: 350px;
+// 	border-radius: 100%;
+// }
 
-#claim-button{
-	width: 250px;
-	height: 40px;
-}
-#deleteItemImg {
-  align-self: center;
-  width: 450px;
-}
+// #claim-button{
+// 	width: 250px;
+// 	height: 40px;
+// }
+// #deleteItemImg {
+//   align-self: center;
+//   width: 450px;
+// }
 
-#modalFooter {
-  display: flex;
-  justify-content: space-between;
-}
+// #modalFooter {
+//   display: flex;
+//   justify-content: space-between;
+// }

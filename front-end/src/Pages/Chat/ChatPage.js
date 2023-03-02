@@ -3,20 +3,18 @@ import Conversation from "./Conversation"
 import { useState, useEffect } from "react"
 import socket from "../../Components/Chatbox/Socket.IO/socket"
 
-export default function ChatPage(){
+export default function ChatPage({users}){
 	const [selectedName, setSeletedName] = useState({name: ''})
 	const [currentUser, setCurrentUser] = useState({username: ''})
 	const [activeUsers, setActiveUsers] = useState([])
-	const [isConnected, setIsConnected] = useState({});
+	const [isDisconnected, setIsDisconnected] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
-	console.log(activeUsers)
 
 	const handleTextChange = (event) => {
     setSeletedName({ name: event.target.value });
   };
 
 	const prepareUserAttributes = (user, yourUserID) => {
-		user.connected = true;
 		user.hasNewMessages = false;
 
 		if(user.userID === yourUserID){
@@ -41,12 +39,17 @@ export default function ChatPage(){
 		}
 	}
 
+	function handleDisconnect(){
+		socket.disconnect()
+		setIsDisconnected(true)
+	}
+
 	useEffect(() => {
 		const session = window.localStorage.getItem("sessionID");
 		const id = window.localStorage.getItem("userID");
 		const username = window.localStorage.getItem("username");
 
-		if (session && id && username) {
+		if (session && id && username && !isDisconnected) {
 			const sessionID = JSON.parse(session)
 			const yourUserID = JSON.parse(id)
 			const parsedUsername = JSON.parse(username)
@@ -80,8 +83,6 @@ export default function ChatPage(){
 			// save the ID of the user
 			socket.userID = userID;
 			socket.username = username
-
-			setIsConnected({sessionID})
 		});
 
 		socket.on('user connected' , (user) => {
@@ -138,7 +139,7 @@ export default function ChatPage(){
 
 		socket.on("private message", ({ content, from, to }) => {
 			for (let idx = 0; idx < activeUsers.length; idx++) {
-				let user = activeUsers[idx];
+				const user = activeUsers[idx];
         const fromSelf = socket.userID === from;
         if (user.userID === (fromSelf ? to : from)) {
           user.messages.push({
@@ -178,7 +179,7 @@ export default function ChatPage(){
 		const sessionID = window.localStorage.getItem("sessionID");
 		const id = window.localStorage.getItem("userID");
 
-		console.log(sessionID)
+
 		if (sessionID) {
 			socket.auth = { sessionID, id };
 			socket.connect();
@@ -195,12 +196,13 @@ export default function ChatPage(){
 			<input  value={selectedName.name} onChange={handleTextChange} className='w-[50%] border-2' type="text"/>
 			<button type="submit" >Submit</button>
 			</form>
+			<button onClick={handleDisconnect}>Disconnet</button>
 			<div className="pt-2 flex">
 				<div className="w-[30%]">
-					<Users setSelectedUser={setSelectedUser} activeUsers={activeUsers}/>
+					<Users setSelectedUser={setSelectedUser} activeUsers={activeUsers} users={users}/>
 				</div>
 				<div className="w-[70%]">
-					<Conversation handleMessage={handleMessage} selectedUser={selectedUser}/>
+					<Conversation handleMessage={handleMessage} selectedUser={selectedUser} />
 				</div>
 			</div>
 		</div>

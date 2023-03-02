@@ -1,39 +1,49 @@
 const app = require("./app.js");
 require("dotenv").config();
 const { createServer } = require("http");
-const { Server } = require("socket.io");
 const httpServer = createServer(app);
+const Redis = require("ioredis");
+const redisClient = new Redis();
 
 const PORT = process.env.PORT;
 
-const io = new Server(httpServer, {
+const io = require("socket.io")(httpServer, {
   cors: {
     origin: `http://localhost:3000`,
     // methods: ["GET", "POST"],
     // credentials: true,
   },
+	adapter: require('socket.io-redis')({
+		pubClient: redisClient,
+    subClient: redisClient.duplicate(),
+	})
 });
 
+const { setupWorker } = require("@socket.io/sticky");
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
 
-const { InMemorySessionStore } = require("./sessionStore");
-const sessionStore = new InMemorySessionStore();
+const { RedisSessionStore } = require("./sessionStore");
+const sessionStore = new RedisSessionStore(redisClient);
 
-const { InMemoryMessageStore } = require("./messageStore");
-const messageStore = new InMemoryMessageStore();
+const { RedisMessageStore } = require("./messageStore");
+const messageStore = new RedisMessageStore(redisClient);
 
-io.use((socket, next) => {
+io.use( async (socket, next) => {
   const sessionID = socket.handshake.auth.sessionID;
+	console.log('start of session id', sessionID, 'end of session id')
+
 	
   if (sessionID) {
     // find existing session
-    const session = sessionStore.findSession(sessionID);
+    const session = await sessionStore.findSession(sessionID);
 
+		console.log('start of session', session, 'end of session')
     if (session) {
       socket.sessionID = sessionID;
       socket.userID = session.userID;
       socket.username = session.username;
+			socket.connected = session.connected
       return next();
     }
   }
@@ -50,11 +60,11 @@ io.use((socket, next) => {
   next();
 });
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
   // persist session
   sessionStore.saveSession(socket.sessionID, {
     userID: socket.userID,
-    username: socket.username,
+    username: socket.username, 
     connected: true,
   });
 
@@ -68,9 +78,13 @@ io.on("connection", (socket) => {
   // join the "userID" room
   socket.join(socket.userID);
 
-  const users = [];
-	const messagesPerUser = new Map();
-  messageStore.findMessagesForUser(socket.userID).forEach((message) => {
+  let users = [];
+	const [messages, sessions] = await Promise.all([
+    messageStore.findMessagesForUser(socket.userID),
+    sessionStore.findAllSessions(),
+  ]);
+  const messagesPerUser = new Map();
+  messages.forEach((message) => {
     const { from, to } = message;
     const otherUser = socket.userID === from ? to : from;
     if (messagesPerUser.has(otherUser)) {
@@ -80,7 +94,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  sessionStore.findAllSessions().forEach((session) => {
+  sessions.forEach((session) => {
     users.push({
       userID: session.userID,
       username: session.username,
@@ -125,6 +139,7 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`Server listenning http://localhost:${PORT}`);
-});
+// httpServer.listen(PORT, () => {
+//   console.log(`Server listenning http://localhost:${PORT}`);
+// });
+setupWorker(io);

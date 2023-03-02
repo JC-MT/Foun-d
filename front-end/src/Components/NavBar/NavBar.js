@@ -20,13 +20,13 @@ const NavBar = ({
 	const notification = []
   return (
 		  <div className={`${ active ? 'brightness-90' : ''} bg-[#F5F5F5] h-[80px] w-screen fixed flex place-content-between	 place-items-center z-40`}>
-				<div className="mapNavbar">
+				<Link to={'/'}>
 				<img
 							className="h-[60px] w-[160px] p-2 pl-3 place-self-center"
 							src={newlogo}
 							alt="foundLogo"
 				/>
-				</div>
+				</Link>
 				<div className={''} onClick={() => {setActive(true)}}>
         	<img className='mr-4' width='30px' height='30px' src={hamburgerMenuIcon} alt='hamburger-icon'/>
       	</div>

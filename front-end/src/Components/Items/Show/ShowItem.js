@@ -70,15 +70,15 @@ const ShowItem = ({
   };
 
   return (
-    <section id="showItemSection">
+    <div class="pt-20">
       {item.length > 0 ? (
         <>
           {users.map((foundUser) => {
             if (foundUser.id === item[0].userid) {
               // console.log(foundUser.id, user.id)
               return (
-                <div id="show-item-div" key={nanoid()}>
-                  <img id="show-image" src={item[0].itemimg} alt="item" />
+                <div className="p-2 flex flex-col" key={nanoid()}>
+                  <img className="place-self-center w-[200px] h-[200px]" src={item[0].itemimg} alt="item" />
                   <div>
                     <h1>Found by: {foundUser.username}</h1>
                     <h2>
@@ -141,7 +141,7 @@ const ShowItem = ({
       ) : null}
       {/* {error ? <p>{error}</p> : null} */}
       <ToastContainer autoClose={3000} theme="dark" />
-    </section>
+    </div>
   );
 };
 
